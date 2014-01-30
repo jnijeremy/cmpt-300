@@ -1,3 +1,10 @@
+/*-------------------------
+Jeremy Ni's hw1, CMPT300
+SFU_ID: 301239927
+SFU_EMAIL:zni@sfu.ca
+2014.1.29
+-------------------------*/
+
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -39,8 +46,6 @@ void ls()
         printf("Error getting pathn");
         exit(0);
     }
-
-    //printf("Current Working Directory = %sn",pathname);
     
     //scan a directory for matching entries
     count = scandir(pathname, &files, file_select, alphasort);
@@ -52,7 +57,6 @@ void ls()
         exit(0);
     }
 
-    //printf("Number of files = %dn",count);
     //if there is some files
     for (i=0;i<count;i++)
         printf("%s  ",files[i]->d_name);    
@@ -85,9 +89,15 @@ void cd(char **input)
             char* home = getenv("HOME");
             ret = chdir(home);
         }
-        else ret = chdir(input[1]);
+        else 
+        {
+        	ret = chdir(input[1]);
+        	if (ret==-1)
+        	{
+        		printf("No such file or directory!\n");
+        	}
+        } 
     }
-    exit(0);
 }
 
 //implement pwd command
@@ -190,7 +200,6 @@ int main(int argc, char **argv)
                       // for(k=0; k<=(no_of_args); k++)
                       //      printf(">>>>%s\n", array_of_strings[k]);
                     
-
                     char *s_cd = "cd";
                     char *s_pwd = "pwd";
                     char *s_ls = "ls";
