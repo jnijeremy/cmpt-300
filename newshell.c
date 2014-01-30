@@ -9,7 +9,6 @@
 #include <sys/param.h>
 #include <dirent.h>
 
- 
 //count how many arguments are in the command
 int count_f(char* buffer)
 {
@@ -57,7 +56,8 @@ void ls()
     //if there is some files
     for (i=0;i<count;i++)
         printf("%s  ",files[i]->d_name);    
-        printf("\n");   
+    printf("\n"); 
+    exit(0);
 }
 
 //filter function, filt out the cureent directory and upper directory file
@@ -87,6 +87,7 @@ void cd(char **input)
         }
         else ret = chdir(input[1]);
     }
+    exit(0);
 }
 
 //implement pwd command
@@ -100,6 +101,7 @@ void pwd()
         exit(0);
     }
     printf("Current Working Directory = %s\n",pathname);
+    exit(0);
 }
 
 //main funcation starts
