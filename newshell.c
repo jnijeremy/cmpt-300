@@ -25,8 +25,7 @@ int count_f(char* buffer)
     return count;
 }
 
-
-
+//implement ls command
 void ls()
 {
     char pathname[80];
@@ -70,11 +69,27 @@ int file_select(struct direct *entry)
     return (1);
 }
 
-void cd(void)
+//implement cd command
+void cd(char **input)
 {
-    printf("cd");
+	int ret = 0;
+    if(input[1] == NULL)
+    {
+        ret = chdir( getenv("HOME") );
+    }
+    else
+    {
+      	char two = input[1][0];
+        if(two == '~' || two == ' ')
+        {
+            char* home = getenv("HOME");
+            ret = chdir(home);
+        }
+        else ret = chdir(input[1]);
+    }
 }
 
+//implement pwd command
 void pwd()
 {
     char pathname[80];
@@ -87,27 +102,32 @@ void pwd()
     printf("Current Working Directory = %s\n",pathname);
 }
 
-
-
- 
+//main funcation starts
 int main(int argc, char **argv)
 {
         //buffer is to hold the commands that the user will type in
         char buffer[80];
         time_t mytime;
         mytime = time(NULL);
+        char *s_close = "exit\n";
 
-
+		char pathname[80];
+    	getcwd(pathname,sizeof(pathname));
  
         while(1)
         {
                 //print the prompt, including time and welcome
                 printf("%s",ctime(&mytime));
-                printf("Jeremy's Shell>");
+                printf("Jeremy's Shell:~%s$",pathname);
                 
                 //get input
                 fgets(buffer, 80, stdin);
                 
+                if (strcmp (buffer,s_close) == 0)
+                {
+                	exit(0);
+                }
+
                 //fork!
                 int pid = fork();
                 //Error checking to see if fork works
@@ -161,7 +181,7 @@ int main(int argc, char **argv)
                     //format for command is eg. ls -a -l
                     //the first element in the array will be the program name
           
-                    char* prog = malloc(sizeof(char)*(strlen(array_of_strings[0])));
+                    char *prog = malloc(sizeof(char)*(strlen(array_of_strings[0])));
                     prog = array_of_strings[0];
                     
                       //  int k=0;
@@ -175,7 +195,7 @@ int main(int argc, char **argv)
 
                     if (strcmp (prog,s_cd) == 0)
                     {
-                        cd();
+                        cd(array_of_strings);
                     }
                     else if (strcmp (prog,s_pwd) == 0)
                     {
@@ -188,8 +208,11 @@ int main(int argc, char **argv)
                     else
                     {
                         //pass the prepared arguments to execv and we're done!
-                        int rv = execvp(prog, array_of_strings);
-                        printf("%s\n",strerror(errno));
+                        int rv = 0;
+                        rv = execvp(prog, array_of_strings);
+                        printf("No command \"%s\" found!\n",prog);
+                        exit(0);
+                        //printf("%s\n",strerror(errno));
                     }
                 }
         }
